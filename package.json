@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "build:pages": "VITE_BASE=/25mm-booklog/ vite build",
+    "dev": "vite",
+    "preview": "vite preview"
   },
   "engines": {
     "node": ">=20.19.0"

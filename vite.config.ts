@@ -17,7 +17,8 @@ function figmaAssetResolver() {
 }
 
 export default defineConfig({
-  base: './',
+  // Use VITE_BASE=/25mm-booklog/ for GitHub Pages; default './' works for Vercel and local dev.
+  base: process.env.VITE_BASE ?? './',
   plugins: [
     figmaAssetResolver(),
     // The React and Tailwind plugins are both required for Make, even if
