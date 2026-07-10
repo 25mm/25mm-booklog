@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, type RefObject } from "react";
 import { motion } from "motion/react";
 import bookListData from "@/imports/book-list-6.json";
 import bookReadIcon from "@/imports/book-read.gif";
@@ -167,13 +167,53 @@ function useIsMobile() {
   return isMobile;
 }
 
+function useVerticalWheelScroll(
+  containerRef: RefObject<HTMLElement | null>,
+  scrollRef: RefObject<HTMLDivElement | null>,
+) {
+  useEffect(() => {
+    const containerEl = containerRef.current;
+    const scrollEl = scrollRef.current;
+    if (!containerEl || !scrollEl) return;
+
+    const onWheel = (event: WheelEvent) => {
+      const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+      if (maxScroll <= 0) return;
+
+      const { deltaX, deltaY } = event;
+      if (Math.abs(deltaX) > Math.abs(deltaY)) return;
+
+      const delta = deltaY;
+      if (delta === 0) return;
+
+      const atStart = scrollEl.scrollLeft <= 0;
+      const atEnd = scrollEl.scrollLeft >= maxScroll - 1;
+      if ((delta < 0 && atStart) || (delta > 0 && atEnd)) return;
+
+      event.preventDefault();
+      scrollEl.scrollLeft += delta;
+    };
+
+    containerEl.addEventListener("wheel", onWheel, { passive: false });
+    return () => containerEl.removeEventListener("wheel", onWheel);
+  }, [containerRef, scrollRef]);
+}
+
 export default function App() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const shelfHeight = isMobile ? Math.round(maxBookHeight * 0.59) : maxBookHeight;
 
+  useVerticalWheelScroll(containerRef, scrollRef);
+
   return (
-    <div className="h-screen w-full font-['EB_Garamond',serif] flex flex-col overflow-hidden" style={{ backgroundColor: "#E6E3DD" }}>
+    <div
+      ref={containerRef}
+      className="h-screen w-full font-['EB_Garamond',serif] flex flex-col overflow-hidden"
+      style={{ backgroundColor: "#E6E3DD" }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-5 font-normal shrink-0">
         <BooklogTitle />
@@ -197,7 +237,7 @@ export default function App() {
         row padding-top equal to TOOLTIP_CLEARANCE so the tooltip renders
         *within* the container's content area rather than above it.
       */}
-      <div className="overflow-x-auto shrink-0">
+      <div ref={scrollRef} className="overflow-x-auto shrink-0 overscroll-x-contain">
         <div
           className="flex gap-[24px] items-start w-max px-5 pb-8"
           style={{ paddingTop: TOOLTIP_CLEARANCE }}
@@ -206,7 +246,7 @@ export default function App() {
             <BookCard
               key={i}
               {...book}
-                shelfHeight={shelfHeight}
+              shelfHeight={shelfHeight}
               blurred={hoveredIndex !== null && hoveredIndex !== i}
               onEnter={() => setHoveredIndex(i)}
               onLeave={() => setHoveredIndex(null)}
