@@ -21,7 +21,7 @@ The site is deployed automatically via GitHub Actions when you push to `main`.
 2. Under **Build and deployment**, set **Source** to **GitHub Actions** (not "Deploy from a branch").
 3. Push to `main` — the workflow builds with `npm run build:pages` and publishes `dist/`.
 
-The live site is at [https://cm-mayc.github.io/25mm-booklog/](https://cm-mayc.github.io/25mm-booklog/).
+The live site is at (https://25mm-booklog.vercel.app/)
 
 **Important:** Do not open `index.html` directly in the browser. Always use `npm run dev` for local development, or `npm run preview` to test the production build.
 
