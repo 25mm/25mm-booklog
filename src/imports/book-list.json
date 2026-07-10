@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "The Midnight Library",
+    "author": "Matt Haig",
+    "genres": ["Fiction", "Fantasy", "Philosophy"],
+    "dateFinished": "2026-02-15",
+    "pages": 304,
+    "rating": 4.5,
+    "coverUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602190253i/52578297.jpg",
+    "review": "A beautiful exploration of regrets and what truly makes a life worth living. Highly recommend.",
+    "favorite": true
+  },
+  {
+    "id": 2,
+    "title": "Atomic Habits",
+    "author": "James Clear",
+    "genres": ["Non-Fiction", "Self-Help", "Productivity"],
+    "dateFinished": "2026-03-22",
+    "pages": 320,
+    "rating": 5.0,
+    "coverUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1655988390i/40121378.jpg",
+    "review": "Practical and actionable advice. The 1% better every day rule actually works.",
+    "favorite": false
+  }
+]
