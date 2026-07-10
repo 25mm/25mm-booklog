@@ -1,7 +1,7 @@
 
 # 25mm Booklog
 
-An accessible, horizontal booklog webpage built with Vite and React. The original design is available at https://www.figma.com/design/34bMf1AcRdWTnRZRfCnhOX/Horizontal-Scrolling-Webpage.
+A horizontal booklog webpage built with Figma Make. Copyright of all images belong to their respective owners.
 
   ## Running the code
 
