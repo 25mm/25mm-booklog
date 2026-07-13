@@ -1,17 +1,21 @@
-import { useState, useEffect, useRef, type RefObject } from "react";
+import { useState, useEffect, useRef, useCallback, type RefObject } from "react";
 import { motion } from "motion/react";
-import bookListData from "@/imports/book-list-6.json";
+import bookListData from "@/imports/book-list.json";
 import bookReadIcon from "@/imports/book-read.gif";
 import buttonMay from "@/imports/button-may.svg";
-import cover01 from "@/imports/book-01.jpg";
-import cover02 from "@/imports/book-02.jpg";
-import cover03 from "@/imports/book-03.jpg";
-import cover04 from "@/imports/book-04.jpg";
-import cover05 from "@/imports/book-05.jpg";
-import cover06 from "@/imports/book-06.jpg";
-import cover07 from "@/imports/book-07.jpg";
 
-const coverImages: Record<number, string> = { 1: cover01, 2: cover02, 3: cover03, 4: cover04, 5: cover05, 6: cover06, 7: cover07 };
+const coverImageModules = import.meta.glob<string>("@/imports/book-*.jpg", {
+  eager: true,
+  import: "default",
+});
+
+const coverImages: Record<number, string> = {};
+for (const [path, url] of Object.entries(coverImageModules)) {
+  const match = path.match(/book-(\d+)\.jpg$/);
+  if (match) coverImages[Number(match[1])] = url;
+}
+
+const INFINITE_SCROLL_COPIES = 3;
 
 const books = bookListData.map((b) => ({
   title: b.title,
@@ -21,7 +25,7 @@ const books = bookListData.map((b) => ({
     ? new Date(b.dateFinished).toLocaleDateString("en-US", { month: "short", day: "numeric" })
     : null,
   review: b.review || null,
-  coverUrl: coverImages[b.id],
+  coverUrl: coverImages[b.id] ?? null,
 }));
 
 const maxBookHeight = Math.max(...books.map((b) => b.height));
@@ -29,7 +33,7 @@ const maxBookHeight = Math.max(...books.map((b) => b.height));
 // Tooltip height budget — must match pt-[Xpx] on the inner flex row below
 const TOOLTIP_CLEARANCE = 220;
 
-function BookCard({ title, author, height, shelfHeight, date, review, coverUrl, blurred, onEnter, onLeave }: { title: string; author: string; height: number; shelfHeight: number; date: string | null; review: string | null; coverUrl: string; blurred: boolean; onEnter: () => void; onLeave: () => void; }) {
+function BookCard({ title, author, height, shelfHeight, date, review, coverUrl, blurred, onEnter, onLeave }: { title: string; author: string; height: number; shelfHeight: number; date: string | null; review: string | null; coverUrl: string | null; blurred: boolean; onEnter: () => void; onLeave: () => void; }) {
   const [detailsVisible, setDetailsVisible] = useState(false);
 
   const showDetails = () => {
@@ -84,21 +88,39 @@ function BookCard({ title, author, height, shelfHeight, date, review, coverUrl, 
               )}
             </div>
           )}
-          <motion.img
-            src={coverUrl}
-            alt={title}
-            className="w-full h-auto rounded-[4px]"
-            animate={{
-              y: detailsVisible ? -10 : 0,
-              filter: detailsVisible ? "drop-shadow(0 10px 8px rgba(0,0,0,0.3))" : "drop-shadow(0 0px 0px rgba(0,0,0,0))",
-            }}
-            transition={{
-              type: "spring",
-              stiffness: 260,
-              damping: 28,
-              mass: 0.8,
-            }}
-          />
+          {coverUrl ? (
+            <motion.img
+              src={coverUrl}
+              alt={title}
+              className="w-full h-auto rounded-[4px]"
+              animate={{
+                y: detailsVisible ? -10 : 0,
+                filter: detailsVisible ? "drop-shadow(0 10px 8px rgba(0,0,0,0.3))" : "drop-shadow(0 0px 0px rgba(0,0,0,0))",
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 28,
+                mass: 0.8,
+              }}
+            />
+          ) : (
+            <motion.div
+              aria-label={title}
+              className="w-full rounded-[4px] bg-black/10"
+              style={{ height: `${height}px` }}
+              animate={{
+                y: detailsVisible ? -10 : 0,
+                boxShadow: detailsVisible ? "0 10px 8px rgba(0,0,0,0.3)" : "0 0px 0px rgba(0,0,0,0)",
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 28,
+                mass: 0.8,
+              }}
+            />
+          )}
         </div>
       </div>
 
@@ -177,18 +199,11 @@ function useVerticalWheelScroll(
     if (!containerEl || !scrollEl) return;
 
     const onWheel = (event: WheelEvent) => {
-      const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
-      if (maxScroll <= 0) return;
-
       const { deltaX, deltaY } = event;
       if (Math.abs(deltaX) > Math.abs(deltaY)) return;
 
       const delta = deltaY;
       if (delta === 0) return;
-
-      const atStart = scrollEl.scrollLeft <= 0;
-      const atEnd = scrollEl.scrollLeft >= maxScroll - 1;
-      if ((delta < 0 && atStart) || (delta > 0 && atEnd)) return;
 
       event.preventDefault();
       scrollEl.scrollLeft += delta;
@@ -199,14 +214,74 @@ function useVerticalWheelScroll(
   }, [containerRef, scrollRef]);
 }
 
+function useInfiniteHorizontalScroll(
+  scrollRef: RefObject<HTMLDivElement | null>,
+  segmentRef: RefObject<HTMLDivElement | null>,
+) {
+  const isAdjustingRef = useRef(false);
+
+  const centerScroll = useCallback(() => {
+    const scrollEl = scrollRef.current;
+    const segmentEl = segmentRef.current;
+    if (!scrollEl || !segmentEl) return;
+
+    isAdjustingRef.current = true;
+    scrollEl.scrollLeft = segmentEl.offsetLeft;
+    requestAnimationFrame(() => {
+      isAdjustingRef.current = false;
+    });
+  }, [scrollRef, segmentRef]);
+
+  useEffect(() => {
+    centerScroll();
+    window.addEventListener("resize", centerScroll);
+    return () => window.removeEventListener("resize", centerScroll);
+  }, [centerScroll]);
+
+  useEffect(() => {
+    const scrollEl = scrollRef.current;
+    const segmentEl = segmentRef.current;
+    if (!scrollEl || !segmentEl) return;
+
+    const onScroll = () => {
+      if (isAdjustingRef.current) return;
+
+      const segmentWidth = segmentEl.offsetWidth;
+      if (segmentWidth <= 0) return;
+
+      const segmentStart = segmentEl.offsetLeft;
+      const segmentEnd = segmentStart + segmentWidth;
+
+      if (scrollEl.scrollLeft < segmentStart - segmentWidth / 2) {
+        isAdjustingRef.current = true;
+        scrollEl.scrollLeft += segmentWidth;
+        requestAnimationFrame(() => {
+          isAdjustingRef.current = false;
+        });
+      } else if (scrollEl.scrollLeft > segmentEnd - segmentWidth / 2) {
+        isAdjustingRef.current = true;
+        scrollEl.scrollLeft -= segmentWidth;
+        requestAnimationFrame(() => {
+          isAdjustingRef.current = false;
+        });
+      }
+    };
+
+    scrollEl.addEventListener("scroll", onScroll, { passive: true });
+    return () => scrollEl.removeEventListener("scroll", onScroll);
+  }, [scrollRef, segmentRef]);
+}
+
 export default function App() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const segmentRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const shelfHeight = isMobile ? Math.round(maxBookHeight * 0.59) : maxBookHeight;
 
   useVerticalWheelScroll(containerRef, scrollRef);
+  useInfiniteHorizontalScroll(scrollRef, segmentRef);
 
   return (
     <div
@@ -238,19 +313,24 @@ export default function App() {
         *within* the container's content area rather than above it.
       */}
       <div ref={scrollRef} className="overflow-x-auto shrink-0 overscroll-x-contain">
-        <div
-          className="flex gap-[24px] items-start w-max px-5 pb-8"
-          style={{ paddingTop: TOOLTIP_CLEARANCE }}
-        >
-          {books.map((book, i) => (
-            <BookCard
-              key={i}
-              {...book}
-              shelfHeight={shelfHeight}
-              blurred={hoveredIndex !== null && hoveredIndex !== i}
-              onEnter={() => setHoveredIndex(i)}
-              onLeave={() => setHoveredIndex(null)}
-            />
+        <div className="flex w-max pb-8" style={{ paddingTop: TOOLTIP_CLEARANCE }}>
+          {Array.from({ length: INFINITE_SCROLL_COPIES }, (_, copyIndex) => (
+            <div
+              key={copyIndex}
+              ref={copyIndex === 1 ? segmentRef : undefined}
+              className="flex gap-[24px] items-start shrink-0 px-5"
+            >
+              {books.map((book, bookIndex) => (
+                <BookCard
+                  key={`${copyIndex}-${bookIndex}`}
+                  {...book}
+                  shelfHeight={shelfHeight}
+                  blurred={hoveredIndex !== null && hoveredIndex !== bookIndex}
+                  onEnter={() => setHoveredIndex(bookIndex)}
+                  onLeave={() => setHoveredIndex(null)}
+                />
+              ))}
+            </div>
           ))}
         </div>
       </div>
