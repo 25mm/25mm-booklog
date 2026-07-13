@@ -1,26 +1,76 @@
 [
   {
     "id": 1,
-    "title": "The Midnight Library",
-    "author": "Matt Haig",
-    "genres": ["Fiction", "Fantasy", "Philosophy"],
-    "dateFinished": "2026-02-15",
-    "pages": 304,
-    "rating": 4.5,
-    "coverUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602190253i/52578297.jpg",
-    "review": "A beautiful exploration of regrets and what truly makes a life worth living. Highly recommend.",
-    "favorite": true
+    "title": "Taiwan Travelogue",
+    "author": "Yang Shuang-zi",
+    "isbn": "9781916751651",
+    "height": "198",
+    "dateFinished": "2026-05-26",
+    "review": "I first knew of this book from Fuchsia Dunlop's post on Instagram. Read and finished it when I was Brussels, a few days after it won the International Booker Prize. A very fascinating backstory about the author and her twin sister. "
   },
   {
     "id": 2,
-    "title": "Atomic Habits",
-    "author": "James Clear",
-    "genres": ["Non-Fiction", "Self-Help", "Productivity"],
-    "dateFinished": "2026-03-22",
-    "pages": 320,
-    "rating": 5.0,
-    "coverUrl": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1655988390i/40121378.jpg",
-    "review": "Practical and actionable advice. The 1% better every day rule actually works.",
-    "favorite": false
+    "title": "Suder",
+    "author": "Percival Everett",
+    "isbn": "9781035077267",
+    "height": "198",
+    "dateFinished": "",
+    "review": "Currently reading. Purchased at Barnes & Noble in New York City, 25th June."
+  },
+  {
+    "id": 3,
+    "title": "Glyph",
+    "author": "Percival Everett",
+    "isbn": "9781555976675",
+    "height": "198",
+    "dateFinished": "",
+    "review": "Purchased with Suder. Both copies are signed by the author(!)"
+  },
+  {
+    "id": 4,
+    "title": "Baby Boom",
+    "author": "Yokoyama Yuichi",
+    "isbn": "9781911081197",
+    "height": "210",
+    "dateFinished": "2026-01-01",
+    "review": "Colours, lines, shapes. Bought in 2025 at the Pagemasters Zine Fair."
+  },
+  {
+    "id": 5,
+    "title": "Baskerville's Teardrop Explodes - A Selection of Books as Muses",
+    "author": "John Morgan",
+    "isbn": "9781068294013",
+    "height": "205",
+    "dateFinished": "2026-02-14",
+    "review": "Published posthumously by one of my favourite book designers. The book itself is simple and unassuming, and in my opinion embodies similar qualities of the muses that Morgan had picked."
+  },
+  {
+    "id": 6,
+    "title": "So Much Blue",
+    "author": "Percival Everett",
+    "isbn": "9781911081197",
+    "height": "210",
+    "dateFinished": "2026-04-21",
+    "review": "Probably the best of Everett's works I have read so far."
+  },
+  {
+    "id": 7,
+    "title": "This Part Is Silent: A Life Between Cultures",
+    "author": "SJ Kim",
+    "isbn": "9781916751262",
+    "height": "210",
+    "dateFinished": "2026-06-27",
+    "review": "Could not finish this. I've since donated it to a community library."
+  },
+    {
+    "id": 8,
+    "title": "Unbound",
+    "author": "Karel Martens",
+    "isbn": "9789464460841",
+    "height": "170",
+    "dateFinished": "2026-01-02",
+    "review": "Visual delight from a Dutch master of colours and patterns."
   }
+
+
 ]
