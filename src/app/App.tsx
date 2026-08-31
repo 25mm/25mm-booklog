@@ -317,18 +317,20 @@ export default function App() {
         </a>
       </div>
 
-      {/* Spacer pushes scroll strip to bottom */}
-      <div className="flex-1" />
-
       {/*
         Horizontal scroll container.
+        Fixed to the viewport (rather than flexed to the bottom of the app
+        container) so book titles stay a constant 24px above the browser
+        window's bottom edge even if the tallest cover + tooltip clearance
+        would otherwise overflow a shorter window and get clipped by the
+        app container's overflow-hidden.
         overflow-x:auto forces overflow-y:auto per CSS spec, which would clip
         the tooltip that floats above the image. The fix: give the inner flex
         row padding-top equal to TOOLTIP_CLEARANCE so the tooltip renders
         *within* the container's content area rather than above it.
       */}
-      <div ref={scrollRef} className="overflow-x-auto shrink-0 overscroll-x-contain">
-        <div className="flex w-max pb-8" style={{ paddingTop: TOOLTIP_CLEARANCE }}>
+      <div ref={scrollRef} className="fixed inset-x-0 bottom-6 overflow-x-auto overscroll-x-contain no-scrollbar">
+        <div className="flex w-max" style={{ paddingTop: TOOLTIP_CLEARANCE }}>
           {Array.from({ length: INFINITE_SCROLL_COPIES }, (_, copyIndex) => (
             <div
               key={copyIndex}
