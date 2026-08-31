@@ -273,7 +273,7 @@ function useInfiniteHorizontalScroll(
 }
 
 export default function App() {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const segmentRef = useRef<HTMLDivElement>(null);
@@ -320,16 +320,19 @@ export default function App() {
               ref={copyIndex === 1 ? segmentRef : undefined}
               className="flex gap-[24px] items-start shrink-0 px-5"
             >
-              {books.map((book, bookIndex) => (
-                <BookCard
-                  key={`${copyIndex}-${bookIndex}`}
-                  {...book}
-                  shelfHeight={shelfHeight}
-                  blurred={hoveredIndex !== null && hoveredIndex !== bookIndex}
-                  onEnter={() => setHoveredIndex(bookIndex)}
-                  onLeave={() => setHoveredIndex(null)}
-                />
-              ))}
+              {books.map((book, bookIndex) => {
+                const key = `${copyIndex}-${bookIndex}`;
+                return (
+                  <BookCard
+                    key={key}
+                    {...book}
+                    shelfHeight={shelfHeight}
+                    blurred={hoveredKey !== null && hoveredKey !== key}
+                    onEnter={() => setHoveredKey(key)}
+                    onLeave={() => setHoveredKey(null)}
+                  />
+                );
+              })}
             </div>
           ))}
         </div>

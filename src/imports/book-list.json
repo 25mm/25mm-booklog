@@ -14,8 +14,8 @@
     "author": "Percival Everett",
     "isbn": "9781035077267",
     "height": "198",
-    "dateFinished": "",
-    "review": "Currently reading. Purchased at Barnes & Noble in New York City, 25th June."
+    "dateFinished": "2026-08-10",
+    "review": "The storyline reminds me of the TV series Yellowjackets (don't watch it). The storyline get more and more absurd, and some loose ends don't get fully resolved. It was good to read Everett's first novel to get a sense of how his early interests continue in his other writings. Also got me onto Charlie Parker."
   },
   {
     "id": 3,
@@ -70,7 +70,14 @@
     "height": "240",
     "dateFinished": "2026-01-02",
     "review": "Visual delight from a Dutch master of colours and patterns."
+  },
+  {
+    "id": 9,
+    "title": "Terence Conran's New House Book",
+    "author": "Terence Conran",
+    "isbn": "1840911123",
+    "height": "285",
+    "dateFinished": "",
+    "review": "A gift from a friend after I bought a flat in South London. An older edition with lots of useful information that transcends interior trends."
   }
-
-
 ]
