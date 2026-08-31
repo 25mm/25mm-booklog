@@ -35,6 +35,7 @@ const TOOLTIP_CLEARANCE = 220;
 
 function BookCard({ title, author, height, shelfHeight, date, review, coverUrl, blurred, onEnter, onLeave }: { title: string; author: string; height: number; shelfHeight: number; date: string | null; review: string | null; coverUrl: string | null; blurred: boolean; onEnter: () => void; onLeave: () => void; }) {
   const [detailsVisible, setDetailsVisible] = useState(false);
+  const [coverWidth, setCoverWidth] = useState<number | null>(null);
 
   const showDetails = () => {
     setDetailsVisible(true);
@@ -57,6 +58,7 @@ function BookCard({ title, author, height, shelfHeight, date, review, coverUrl, 
   return (
     <div
       className={`flex flex-col gap-3 shrink-0 w-[120px] md:w-[204px] cursor-pointer outline-none transition-[filter] duration-200 focus-visible:ring-1 focus-visible:ring-black/50 ${blurred ? "blur-[3px]" : "blur-0"}`}
+      style={coverWidth ? { width: `${coverWidth}px` } : undefined}
       role="button"
       tabIndex={0}
       aria-label={`Show details for ${title} by ${author}`}
@@ -92,7 +94,20 @@ function BookCard({ title, author, height, shelfHeight, date, review, coverUrl, 
             <motion.img
               src={coverUrl}
               alt={title}
-              className="w-full h-auto rounded-[4px]"
+              className="rounded-[4px]"
+              style={{ height: `${height}px`, width: coverWidth ? `${coverWidth}px` : "auto" }}
+              ref={(img) => {
+                if (img?.complete && img.naturalWidth && img.naturalHeight) {
+                  const measured = Math.round((height * img.naturalWidth) / img.naturalHeight);
+                  setCoverWidth((prev) => (prev === measured ? prev : measured));
+                }
+              }}
+              onLoad={(event) => {
+                const { naturalWidth, naturalHeight } = event.currentTarget;
+                if (naturalWidth && naturalHeight) {
+                  setCoverWidth(Math.round((height * naturalWidth) / naturalHeight));
+                }
+              }}
               animate={{
                 y: detailsVisible ? -10 : 0,
                 filter: detailsVisible ? "drop-shadow(0 10px 8px rgba(0,0,0,0.3))" : "drop-shadow(0 0px 0px rgba(0,0,0,0))",
